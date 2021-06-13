@@ -6,8 +6,36 @@
 #include <Adafruit_GFX.h>
 #include <Max72xxPanel.h>
 #include <WiFiUdp.h>
+#include <Arduino_JSON.h>
+#include <ESP8266HTTPClient.h>
 #include "time.h"
 
+
+String httpGETRequest(const char* serverName) {
+  HTTPClient http;
+    
+  // Your IP address with path or Domain name with URL path 
+  http.begin(serverName);
+  
+  // Send HTTP POST request
+  int httpResponseCode = http.GET();
+  
+  String payload = "{}"; 
+  
+  if (httpResponseCode>0) {
+    Serial.print("HTTP Response code: ");
+    Serial.println(httpResponseCode);
+    payload = http.getString();
+  }
+  else {
+    Serial.print("Error code: ");
+    Serial.println(httpResponseCode);
+  }
+  // Free resources
+  http.end();
+
+  return payload;
+}
 
 String weekDays[7]={"Chu Nhat", "Thu Hai", "Thu Ba", "Thu Tu", "Thu Nam", "Thu Sau", "Thu Bay"};
 
@@ -16,6 +44,11 @@ String weekDays[7]={"Chu Nhat", "Thu Hai", "Thu Ba", "Thu Tu", "Thu Nam", "Thu S
 // CS       --> D6
 // CLK      --> D5
 #define pinCS             D6
+
+String new1 = "https://api.thingspeak.com/apps/thinghttp/send_request?api_key=CFVHA6VGN9EI0VO7";
+String new2 = "https://api.thingspeak.com/apps/thinghttp/send_request?api_key=4EX6UMGXBPFFFXJL";
+String getnew1;
+String getnew2;
 
 
 //String date;
@@ -77,6 +110,8 @@ void setup()
 void loop() 
 {
   timeClient.update();
+  getnew1= httpGETRequest(new1.c_str());
+  getnew2= httpGETRequest(new2.c_str());
   unsigned long epochTime = timeClient.getEpochTime();
   struct tm *ptm = gmtime ((time_t *)&epochTime); 
   int monthDay = ptm->tm_mday;
@@ -88,7 +123,8 @@ void loop()
   DisplayTime();
   ScrollText(weatherString);
   ScrollText(currentDate);
-
+  ScrollText(getnew1);
+  ScrollText(getnew2);
   delay(100);
 }
 
