@@ -11,7 +11,7 @@
 #include "time.h"
 
 
-String httpGETRequest(const char* serverName) {
+String httpGETRequest(String serverName) {
   HTTPClient http;
     
   // Your IP address with path or Domain name with URL path 
@@ -110,8 +110,8 @@ void setup()
 void loop() 
 {
   timeClient.update();
-  getnew1= httpGETRequest(new1.c_str());
-  getnew2= httpGETRequest(new2.c_str());
+  getnew1= httpGETRequest(new1);
+  getnew2= httpGETRequest(new2);
   unsigned long epochTime = timeClient.getEpochTime();
   struct tm *ptm = gmtime ((time_t *)&epochTime); 
   int monthDay = ptm->tm_mday;
